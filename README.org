@@ -1,4 +1,3 @@
-# #+TITLE: Term Project Report
 # #+SUBTITLE: CSE 3442: Embedded Systems I
 #+AUTHOR: Ikechukwu Ofili
 #+DATE: May 5, 2023
