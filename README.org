@@ -1,0 +1,71 @@
+#+TITLE: Term Project Report
+#+SUBTITLE: CSE 3442: Embedded Systems I
+#+AUTHOR: Ikechukwu Ofili
+#+DATE: May 5, 2023
+#+LANGUAGE: en
+#+OPTIONS: toc:nil
+#+LATEX_HEADER: \usepackage{float}
+
+#+begin_export latex
+\clearpage \tableofcontents \clearpage
+#+end_export
+
+* Introduction
+  The project is a haptic walking aid for visually impaired. It's job is to give haptic feedback to the user if certain proximity events are triggered. 
+For example, if you are about to hit a wall or you are walking up a flight of stairs. The user can configure the walking aid as much as they need even tweaking the intensity of the vibration. 
+All code for this project was written in C. Development was done in TI's /Code Composer Studio/ over a span of about 8 weeks.
+
+
+* Theory of Operation
+To get a wholistic approach of the project, I feel we need to first understand the various parts that make up the project.
+
+#+ATTR_LATEX: :placement [H] :width 0.5\textwidth
+#+attr_org: :width 100
+#+caption: The Tiva C Series TM4C123GH6PM microcontroller board
+[[./images/board.jpg]]
+
+First, we have the brain of the walking aid, the microcontroller board, [[https://www.ti.com/product/TM4C123GH6PM][ /Texas Instruments/ TM4C123GH6PM microcontroller]].
+This board powers all the hardware, handles the logic for reading the sensors, choosing to turn on the motor or not, saving user config settings, etc.
+
+This project also uses three ultra-sonic distance sensors which are the HC-SR04 sensors (I will link the datasheet [[https://www.handsontec.com/dataspecs/HC-SR04-Ultrasonic.pdf][here]]). The sensors are connected to the
+microcontroller as GPIOs (general-purpose inputs and outputs) 
+I use a timer to measure the amount of time that passed between when the sound wave was pulsed and when it bounces back which I can then use to calculate
+the distance using the speed of sound. Then, another timer that times is used to store the current distances measured by these sensors to a global variable =`dist`=
+ten times a second. After that, we then turn on (or off) the motor if the specified distance(s) warrants that. 
+
+#+ATTR_LATEX: :placement [H] :width 0.7\textwidth
+#+caption: HC-SR04 Ultra-sonic sensors
+[[./images/sensors.jpg]]
+
+The motor used draws a lot of current. Therefore, I could not power it directly using the microcontroller board but I had to use a MOSFET as a switch(ing amplifier)
+
+#+ATTR_LATEX: :placement [H] :width 0.7\textwidth
+#+caption: Switching circuit for powering the motor
+[[./images/circuit.jpg]]
+
+A major part of this project is the event system. Users can add certain events that triggers the motors when the event is live. There are 16 simple events and 4 compound ones.
+Simple events simply vibrates the cane with a specified pattern when any of the three sensors senses an obstacle between a set distance. A compound event is the conjunction of
+two simple events. That is, it sets off when both events are live. The user can also set a specific pattern for those too. An event I used to test the final product and I find
+to be very useful is one to detect the next step while climbing up a flight of stairs. The events are also stored to long-term memory so that after power-off, user settings are not lost
+
+#+ATTR_LATEX: :placement [H] :width 0.5\textwidth
+#+caption: The sensors, motor and circuit all wired up in the plastic casing
+[[./images/guts.jpg]]
+
+Finally, the completed project is housed in a 3D-printed plastic encasing and I used a PVC pipe as a mock-up walking stick for testing. A battery pack is also strapped on for powering
+the walking aid outside development.
+
+#+ATTR_ORG: :width 200
+#+ATTR_LATEX: :placement [H]
+#+CAPTION: Pictures of the completed project
+[[./images/final.jpg]] 
+
+
+* Observations
+The only observations that I noticed while designing and building this project was how unreliable the ultrasonic sensors are. 
+Every once in a while, there will be a spike in the readings and some times the readings are wrong altogether if the obstacle is a smoother surface.
+However, for our case where we only need a few centimeters of precision, this is fine (as long as the object can reflect the incoming sound waves)
+
+* Conclusions
+In conclusion, I was able to build a haptic walking aid with user interaction and is actually fairly usable. I learned various embedded systems techniques and concepts along
+the way. It was truly a fun and educative project and I cannot wait for more like this
